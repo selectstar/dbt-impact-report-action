@@ -57,7 +57,7 @@ class Git:
         self.git_provider = git_provider
         self.token = get_settings().get(AppSettings.GIT_REPOSITORY_TOKEN)
 
-    def get_changed_files(self, ):
+    def get_changed_files(self):
         repository = self.settings.get(AppSettings.GIT_REPOSITORY)
         pull_request_id = self.settings.get(AppSettings.PULL_REQUEST_ID)
 
