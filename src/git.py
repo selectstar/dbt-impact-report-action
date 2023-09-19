@@ -51,15 +51,15 @@ class Git:
     def __init__(self, token: str):
         self.token = token
 
-    def get_changed_files(self, scm_provider: GitProvider, repository: str, pull_request_id: str):
-        url = scm_provider.build_pull_request_files_url(repository=repository, remote_id=pull_request_id)
+    def get_changed_files(self, git_provider: GitProvider, repository: str, pull_request_id: str):
+        url = git_provider.build_pull_request_files_url(repository=repository, remote_id=pull_request_id)
 
         headers = {'Authorization': f'Bearer {self.token}'}
 
         response = requests.get(url, headers=headers)
 
         if response.status_code != 200:
-            raise APIException(f"Unexpected response. Host {scm_provider.host}. Code {response.status_code}."
+            raise APIException(f"Unexpected response. Host {git_provider.host}. Code {response.status_code}."
                                f" Message {response.content}")
 
         files = response.json()
