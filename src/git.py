@@ -5,8 +5,9 @@ import requests
 from enum import Enum
 from string import Template
 
+from dataobjects import DbtModel
 from exceptions import APIException
-from settings import AppSettings, get_settings
+from settings import AppSettings
 
 
 class GitProvider(Enum):
@@ -55,7 +56,7 @@ class Git:
     def __init__(self, git_provider: GitProvider, settings: dict):
         self.settings = settings
         self.git_provider = git_provider
-        self.token = get_settings().get(AppSettings.GIT_REPOSITORY_TOKEN)
+        self.token = settings.get(AppSettings.GIT_REPOSITORY_TOKEN)
 
     def get_changed_files(self):
         repository = self.settings.get(AppSettings.GIT_REPOSITORY)
@@ -73,12 +74,11 @@ class Git:
 
         files = response.json()
 
-        found_files = []
+        found_models = []
 
         for file in files:
             result = re.match(r"models/(\w)+/(\w+)+.sql", file.get("filename"), flags=re.IGNORECASE)
             if result:
-                filename = file.get("filename").split("/")[-1]
-                found_files.append((filename, file.get("status")))
+                found_models.append(DbtModel(file))
 
-        return found_files
+        return found_models

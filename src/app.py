@@ -1,6 +1,7 @@
 
 from settings import AppSettings, get_settings
 from git import GitProvider
+from selectstar import SelectStar
 
 
 if __name__ == '__main__':
@@ -10,7 +11,10 @@ if __name__ == '__main__':
     git_provider = GitProvider(settings.get(AppSettings.GIT_PROVIDER))
 
     git = git_provider.get_git_integration(settings)
-    files = git.get_changed_files()
+    dbt_models = git.get_changed_files()
 
-    for f in files:
-        print(f)
+    selectstar = SelectStar(settings=settings)
+    selectstar.get_lineage(dbt_models=dbt_models)
+
+    for m in dbt_models:
+        print(m)
