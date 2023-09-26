@@ -59,14 +59,14 @@ class ReportPrinter:
         if model.warehouse_links:
             total_impact_number = total_impact_number + len(model.warehouse_links[0].table.downstream_elements)
 
-        lines.append(f"Total Potential Impact: {total_impact_number} direct downstream objects.\n")
+        lines.append(f"Potential Impact: {total_impact_number} direct downstream objects.\n")
 
         if total_impact_number:
-            lines.append("| Object Type | Name |\n|--------|--------|\n")
+            lines.append("| Source | Object Type | Name |\n|--------|--------|--------|\n")
 
             for model_element in model.downstream_elements:
                 obj_url = f'{self.select_star_api_url}/tables/{model_element.guid}/overview'
-                lines.append(f"|{model_element.data_source_type}|[{model_element.name}]({obj_url})|\n")
+                lines.append(f"|{model_element.data_source_type}|???|[{model_element.name}]({obj_url})|\n")
 
             if model.warehouse_links:
                 linked_table = model.warehouse_links[0].table
@@ -77,6 +77,7 @@ class ReportPrinter:
                         [
                             "",
                             f"{linked_table_element.data_source_type}",
+                            "???",
                             f"[{linked_table_element.name}]({obj_url})",
                             "",
                         ]

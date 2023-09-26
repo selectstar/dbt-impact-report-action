@@ -99,6 +99,7 @@ class DbtModel(ReportObject):
         self.filename = self.filepath.split("/")[-1]
         self.status = data.get("status")
         self.guid = None
+        self.type = None
         self.warehouse_links = []
         self.downstream_elements = []
 
