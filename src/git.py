@@ -39,7 +39,7 @@ class GitProvider(Enum):
     GitHub = (
         "github",
         "api.github.com",
-        "https://$host/repos/$repository/pulls/$pull_request_id/files",
+        "https://$host/repos/$repository/pulls/$pull_request_id/files?per_page=100",
         "https://$host/repos/$repository/issues/$pull_request_id/comments",
         "https://$host/repos/$repository/issues/comments/$comment_id"
     )
@@ -112,6 +112,8 @@ class Git:
             result = re.match(r"models/(\w)+/(\w+)+.sql", file.get("filename"), flags=re.IGNORECASE)
             if result:
                 found_models.append(DbtModel(file))
+
+        log.info(f'Found models: {[(f.filename, f.status) for f in found_models]}')
 
         return found_models
 
