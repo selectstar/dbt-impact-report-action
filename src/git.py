@@ -84,12 +84,13 @@ class GitProvider(Enum):
 
 class Git:
 
+    comment_anchor = '<!-- ImpactReportIdentifier: select-star-dbt-impact-report -->'
+
     def __init__(self, git_provider: GitProvider, settings: dict):
         self.settings = settings
         self.git_provider = git_provider
         self.repository = self.settings.get(AppSettings.GIT_REPOSITORY)
         self.pull_request_id = self.settings.get(AppSettings.PULL_REQUEST_ID)
-        self.select_star_comment_anchor = '<!-- ImpactReportIdentifier: select-star-dbt-impact-report -->'
         self.session = requests.Session()
         self.session.headers.update({
             'Authorization': f'Bearer {settings.get(AppSettings.GIT_REPOSITORY_TOKEN)}',
@@ -129,13 +130,13 @@ class Git:
         comments = response.json()
 
         for comment in comments:
-            if self.select_star_comment_anchor in comment.get('body'):
+            if self.comment_anchor in comment.get('body'):
                 return comment
 
     def __insert_impact_report(self, body:str) -> dict:
         url = self.git_provider.build_list_comments_url(repository=self.repository,
                                                         pull_request_id=self.pull_request_id)
-        body = f'{self.select_star_comment_anchor}\n{body}'
+        body = f'{self.comment_anchor}\n{body}'
 
         response = self.session.post(url, json={"body": body})
 
@@ -145,7 +146,7 @@ class Git:
         url = self.git_provider.build_detail_comments_url(repository=self.repository,
                                                           comment_id=comment_id)
 
-        body = f'{self.select_star_comment_anchor}\n{body}'
+        body = f'{self.comment_anchor}\n{body}'
 
         response = self.session.patch(url, json={"body": body})
 
