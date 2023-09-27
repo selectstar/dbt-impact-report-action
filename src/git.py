@@ -109,6 +109,9 @@ class Git:
 
         files = response.json()
 
+        if len(files) == 100:
+            log.warning("Processing only the first 100 files on this pull request.")
+
         found_models = []
 
         for file in files:

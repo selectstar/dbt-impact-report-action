@@ -34,7 +34,7 @@ class SelectStar:
             a_slice = dbt_models[i:i + page_size]
             slice_str = ",".join(dbt_model.filename for dbt_model in a_slice)
             params = {
-                'query': '{guid,extra}',
+                'query': '{guid,extra,table_type}',
                 'filename': slice_str,
                 'datasources': self.datasource_guid,
             }
@@ -60,7 +60,7 @@ class SelectStar:
         """
         url = f'{self.host}/v1/tables/{guid}/'
         params = {
-            'query': f'{{guid,name,database{{guid,name,data_source{{guid,name,type}}}},schema{{guid,name}}}}'
+            'query': f'{{guid,name,data_type,database{{guid,name,data_source{{guid,name,type}}}},schema{{guid,name}}}}'
         }
         response = self.session.get(url, params=params)
 

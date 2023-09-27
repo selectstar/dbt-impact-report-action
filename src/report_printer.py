@@ -66,7 +66,9 @@ class ReportPrinter:
 
             for model_element in model.downstream_elements:
                 obj_url = f'{self.select_star_api_url}/tables/{model_element.guid}/overview'
-                lines.append(f"|{model_element.data_source_type}|???|[{model_element.name}]({obj_url})|\n")
+                lines.append(f"|{model_element.data_source_type}"
+                             f"|{model_element.type}"
+                             f"|[{model_element.name}]({obj_url})|\n")
 
             if model.warehouse_links:
                 linked_table = model.warehouse_links[0].table
@@ -76,8 +78,8 @@ class ReportPrinter:
                     lines.append("|".join(
                         [
                             "",
-                            f"{linked_table_element.data_source_type}",
-                            "???",
+                            linked_table_element.data_source_type,
+                            linked_table_element.type,
                             f"[{linked_table_element.name}]({obj_url})",
                             "",
                         ]
