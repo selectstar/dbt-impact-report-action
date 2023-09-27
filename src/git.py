@@ -84,21 +84,24 @@ class GitProvider(Enum):
 
 class Git:
 
+    comment_anchor = '<!-- ImpactReportIdentifier: select-star-dbt-impact-report -->'
+
     def __init__(self, git_provider: GitProvider, settings: dict):
         self.settings = settings
         self.git_provider = git_provider
-        self.token = settings.get(AppSettings.GIT_REPOSITORY_TOKEN)
         self.repository = self.settings.get(AppSettings.GIT_REPOSITORY)
         self.pull_request_id = self.settings.get(AppSettings.PULL_REQUEST_ID)
-        self.select_star_comment_anchor = '<!-- ImpactReportIdentifier: select-star-dbt-impact-report -->'
+        self.session = requests.Session()
+        self.session.headers.update({
+            'Authorization': f'Bearer {settings.get(AppSettings.GIT_REPOSITORY_TOKEN)}',
+            'User-Agent': 'Select Star Dbt Impact Report'
+        })
 
     def get_changed_files(self):
         url = self.git_provider.build_pull_request_files_url(repository=self.repository,
                                                              pull_request_id=self.pull_request_id)
 
-        headers = {'Authorization': f'Bearer {self.token}'}
-
-        response = requests.get(url, headers=headers)
+        response = self.session.get(url)
 
         if response.status_code != 200:
             raise APIException(f"Unexpected response. Host {self.git_provider.host}. Code {response.status_code}."
@@ -120,10 +123,7 @@ class Git:
     def __get_impact_report_comment_id(self) -> dict | None:
         url = self.git_provider.build_list_comments_url(repository=self.repository,
                                                         pull_request_id=self.pull_request_id)
-
-        headers = {'Authorization': f'Bearer {self.token}'}
-
-        response = requests.get(url, headers=headers)
+        response = self.session.get(url)
 
         if response.status_code != 200:
             raise APIException(f"Unexpected response. Host {self.git_provider.host}. Code {response.status_code}."
@@ -132,18 +132,15 @@ class Git:
         comments = response.json()
 
         for comment in comments:
-            if self.select_star_comment_anchor in comment.get('body'):
+            if self.comment_anchor in comment.get('body'):
                 return comment
 
     def __insert_impact_report(self, body:str) -> dict:
         url = self.git_provider.build_list_comments_url(repository=self.repository,
                                                         pull_request_id=self.pull_request_id)
+        body = f'{self.comment_anchor}\n{body}'
 
-        headers = {'Authorization': f'Bearer {self.token}'}
-
-        body = f'{self.select_star_comment_anchor}\n{body}'
-
-        response = requests.post(url, headers=headers, json={"body": body})
+        response = self.session.post(url, json={"body": body})
 
         return response.json()
 
@@ -151,11 +148,9 @@ class Git:
         url = self.git_provider.build_detail_comments_url(repository=self.repository,
                                                           comment_id=comment_id)
 
-        headers = {'Authorization': f'Bearer {self.token}'}
+        body = f'{self.comment_anchor}\n{body}'
 
-        body = f'{self.select_star_comment_anchor}\n{body}'
-
-        response = requests.patch(url, headers=headers, json={"body": body})
+        response = self.session.patch(url, json={"body": body})
 
         return response.json()
 
@@ -164,12 +159,12 @@ class Git:
         found_comment = self.__get_impact_report_comment_id()
 
         if found_comment:
-            logging.info(f'Previous impact report found. id={found_comment.get("id")}'
-                         f' url={found_comment.get("html_url")}.')
-            self.__update_impact_report(comment_id=found_comment.get("id"), body=body)
-            logging.info(f'Previous impact report updated. id={found_comment.get("id")}'
-                         f' url={found_comment.get("html_url")}.')
+            logging.info(f'Previous impact report found. id={found_comment["id"]}'
+                         f' url={found_comment["html_url"]}.')
+            self.__update_impact_report(comment_id=found_comment["id"], body=body)
+            logging.info(f'Previous impact report updated. id={found_comment["id"]}'
+                         f' url={found_comment["html_url"]}.')
         else:
             logging.info(f'Previous impact report not found, creating a new one.')
             new_comment = self.__insert_impact_report(body)
-            logging.info(f'New impact report created. id={new_comment.get("id")} url={new_comment.get("html_url")}.')
+            logging.info(f'New impact report created. id={new_comment["id"]} url={new_comment["html_url"]}.')
