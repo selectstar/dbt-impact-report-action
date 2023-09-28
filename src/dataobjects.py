@@ -35,6 +35,7 @@ class DownstreamElement(ReportObject):
     def _extract_attributes(self, data: dict):
         self.guid = data.get("guid")
         self.name = data.get("name")
+        self.type = data.get("data_type") or "-"
         self.full_name = data.get("full_name")
         self.data_source_type = data.get("data_source_type")
         if data.get("popularity"):
