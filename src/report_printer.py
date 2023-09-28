@@ -11,8 +11,7 @@ class ReportPrinter:
 
     def print(self, models: list[DbtModel]):
         """
-        Creates the impact report.
-
+        Creates the impact report
         :param models: a list of dbt models
         :return: the complete, final text of the report
         """
@@ -21,9 +20,13 @@ class ReportPrinter:
         total_impact_number = 0
 
         for model in models:
-            element_impact_number, model_text_body = self._print_model(model)
-            total_impact_number = total_impact_number + element_impact_number
-            elements.append(model_text_body)
+            if model.guid:
+                element_impact_number, model_text_body = self._print_model(model)
+                total_impact_number = total_impact_number + element_impact_number
+                elements.append(model_text_body)
+            else:
+                model_text_body = self._print_model_not_found(model)
+                elements.append(model_text_body)
 
         header = f"# Select Star Impact Report\n\n" \
                  f"### Total Potential Impact: {total_impact_number} direct downstream objects for the {len(models)}" \
@@ -32,6 +35,16 @@ class ReportPrinter:
         body = "\n".join(elements)
 
         return f"{header}{body}"
+
+    @staticmethod
+    def _print_model_not_found(model: DbtModel) -> str:
+
+        lines = [
+            f'### - {model.filepath}\n',
+            f'Model not found in Select Star database.',
+        ]
+
+        return "".join(lines)
 
     def _print_model(self, model: DbtModel) -> (int, str):
         """

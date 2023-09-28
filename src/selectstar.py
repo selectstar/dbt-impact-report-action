@@ -41,8 +41,7 @@ class SelectStar:
             response = self.session.get(url, params=params)
 
             if response.status_code != 200:
-                raise APIException(f"Unexpected response. Host {self.host}. Code {response.status_code}."
-                                   f" Message {response.content}")
+                raise APIException(response=response)
 
             tables = response.json()["results"]
 
@@ -65,8 +64,7 @@ class SelectStar:
         response = self.session.get(url, params=params)
 
         if response.status_code != 200:
-            raise APIException(f"Unexpected response. Host {self.host}. Code {response.status_code}."
-                               f" Message {response.content}")
+            raise APIException(response=response)
 
         return response.json()
 
@@ -77,12 +75,14 @@ class SelectStar:
         """
 
         for model in dbt_models:
+            if not model.guid:
+                continue
+
             url = f'{self.host}/v1/dbt/warehouse-link/{model.guid}/'
             response = self.session.get(url)
 
             if response.status_code != 200:
-                raise APIException(f"Unexpected response. Host {self.host}. Code {response.status_code}."
-                                   f" Message {response.content}")
+                raise APIException(response=response)
 
             found_links = response.json()
 
@@ -113,8 +113,7 @@ class SelectStar:
         response = self.session.get(url, params=params)
 
         if response.status_code != 200:
-            raise APIException(f"Unexpected response. Host {self.host}. Code {response.status_code}."
-                               f" Message {response.content}")
+            raise APIException(response=response)
 
         found_elements = response.json()["table_lineage"]
 
@@ -128,6 +127,8 @@ class SelectStar:
         :param dbt_models: list of dbt models
         """
         for model in dbt_models:
+            if not model.guid:
+                continue
             self.__get_element_lineage(model)
             for link in model.warehouse_links:
                 self.__get_element_lineage(link.table)
