@@ -7,12 +7,11 @@ class ReportPrinter:
 
     def __init__(self, settings: dict):
         self.settings = settings
-        self.select_star_api_url = settings.get(AppSettings.SELECTSTAR_API_URL)
+        self.select_star_web_url = settings.get(AppSettings.SELECTSTAR_WEB_URL)
 
     def print(self, models: list[DbtModel]):
         """
-        Creates the impact report.
-
+        Creates the impact report
         :param models: a list of dbt models
         :return: the complete, final text of the report
         """
@@ -21,9 +20,13 @@ class ReportPrinter:
         total_impact_number = 0
 
         for model in models:
-            element_impact_number, model_text_body = self._print_model(model)
-            total_impact_number = total_impact_number + element_impact_number
-            elements.append(model_text_body)
+            if model.guid:
+                element_impact_number, model_text_body = self._print_model(model)
+                total_impact_number = total_impact_number + element_impact_number
+                elements.append(model_text_body)
+            else:
+                model_text_body = self._print_model_not_found(model)
+                elements.append(model_text_body)
 
         header = f"# Select Star Impact Report\n\n" \
                  f"### Total Potential Impact: {total_impact_number} direct downstream objects for the {len(models)}" \
@@ -32,6 +35,16 @@ class ReportPrinter:
         body = "\n".join(elements)
 
         return f"{header}{body}"
+
+    @staticmethod
+    def _print_model_not_found(model: DbtModel) -> str:
+
+        lines = [
+            f'### - {model.filepath}\n',
+            f'Model not found in Select Star database.',
+        ]
+
+        return "".join(lines)
 
     def _print_model(self, model: DbtModel) -> (int, str):
         """
@@ -42,11 +55,11 @@ class ReportPrinter:
 
         lines = []
 
-        model_url = f'{self.select_star_api_url}/tables/{model.guid}/overview'
+        model_url = f'{self.select_star_web_url}/tables/{model.guid}/overview'
 
         if model.warehouse_links:
             linked_table = model.warehouse_links[0].table
-            linked_table_link = f'{self.select_star_api_url}/tables/{linked_table.guid}/overview'
+            linked_table_link = f'{self.select_star_web_url}/tables/{linked_table.guid}/overview'
             maps_to = f" maps to [{linked_table.database.data_source.type}/{linked_table.database.name}/" \
                       f"{linked_table.schema.name}/{linked_table.name}]({linked_table_link})"
         else:
@@ -65,7 +78,7 @@ class ReportPrinter:
             lines.append("| Source | Object Type | Name |\n|--------|--------|--------|\n")
 
             for model_element in model.downstream_elements:
-                obj_url = f'{self.select_star_api_url}/tables/{model_element.guid}/overview'
+                obj_url = f'{self.select_star_web_url}/tables/{model_element.guid}/overview'
                 lines.append(f"|{model_element.data_source_type}"
                              f"|{model_element.type}"
                              f"|[{model_element.name}]({obj_url})|\n")
@@ -74,7 +87,7 @@ class ReportPrinter:
                 linked_table = model.warehouse_links[0].table
 
                 for linked_table_element in linked_table.downstream_elements:
-                    obj_url = f'{self.select_star_api_url}/tables/{linked_table_element.guid}/overview'
+                    obj_url = f'{self.select_star_web_url}/tables/{linked_table_element.guid}/overview'
                     lines.append("|".join(
                         [
                             "",

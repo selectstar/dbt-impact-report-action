@@ -18,7 +18,7 @@ class SelectStar:
             'Authorization': f'Token {settings.get(AppSettings.SELECTSTAR_API_TOKEN)}',
             'User-Agent': 'Select Star Dbt Impact Report'
         })
-        self.host = settings.get(AppSettings.SELECTSTAR_API_URL)
+        self.api_url = settings.get(AppSettings.SELECTSTAR_API_URL)
         self.datasource_guid = settings.get(AppSettings.SELECTSTAR_DATASOURCE_GUID)
 
     def __get_tables_guids(self, dbt_models: list[DbtModel]):
@@ -28,7 +28,7 @@ class SelectStar:
         """
 
         page_size = 10
-        url = f'{self.host}/v1/tables/'
+        url = f'{self.api_url}/v1/tables/'
 
         for i in range(0, len(dbt_models), page_size):
             a_slice = dbt_models[i:i + page_size]
@@ -41,8 +41,7 @@ class SelectStar:
             response = self.session.get(url, params=params)
 
             if response.status_code != 200:
-                raise APIException(f"Unexpected response. Host {self.host}. Code {response.status_code}."
-                                   f" Message {response.content}")
+                raise APIException(response=response)
 
             tables = response.json()["results"]
 
@@ -58,15 +57,14 @@ class SelectStar:
         :param guid: table's guid
         :return: the data returned by the API
         """
-        url = f'{self.host}/v1/tables/{guid}/'
+        url = f'{self.api_url}/v1/tables/{guid}/'
         params = {
             'query': f'{{guid,name,data_type,database{{guid,name,data_source{{guid,name,type}}}},schema{{guid,name}}}}'
         }
         response = self.session.get(url, params=params)
 
         if response.status_code != 200:
-            raise APIException(f"Unexpected response. Host {self.host}. Code {response.status_code}."
-                               f" Message {response.content}")
+            raise APIException(response=response)
 
         return response.json()
 
@@ -77,12 +75,14 @@ class SelectStar:
         """
 
         for model in dbt_models:
-            url = f'{self.host}/v1/dbt/warehouse-link/{model.guid}/'
+            if not model.guid:
+                continue
+
+            url = f'{self.api_url}/v1/dbt/warehouse-link/{model.guid}/'
             response = self.session.get(url)
 
             if response.status_code != 200:
-                raise APIException(f"Unexpected response. Host {self.host}. Code {response.status_code}."
-                                   f" Message {response.content}")
+                raise APIException(response=response)
 
             found_links = response.json()
 
@@ -96,7 +96,7 @@ class SelectStar:
         Get the lineage for the given element
         :param element: a dbt model or a table linked (warehouse link)
         """
-        url = f'{self.host}/v1/lineage/{element.guid}/'
+        url = f'{self.api_url}/v1/lineage/{element.guid}/'
         params = {
             'dbt_links': True,
             'direction': 'right',
@@ -113,8 +113,7 @@ class SelectStar:
         response = self.session.get(url, params=params)
 
         if response.status_code != 200:
-            raise APIException(f"Unexpected response. Host {self.host}. Code {response.status_code}."
-                               f" Message {response.content}")
+            raise APIException(response=response)
 
         found_elements = response.json()["table_lineage"]
 
@@ -128,6 +127,8 @@ class SelectStar:
         :param dbt_models: list of dbt models
         """
         for model in dbt_models:
+            if not model.guid:
+                continue
             self.__get_element_lineage(model)
             for link in model.warehouse_links:
                 self.__get_element_lineage(link.table)

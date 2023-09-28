@@ -104,8 +104,7 @@ class Git:
         response = self.session.get(url)
 
         if response.status_code != 200:
-            raise APIException(f"Unexpected response. Host {self.git_provider.host}. Code {response.status_code}."
-                               f" Message {response.content}")
+            raise APIException(response=response)
 
         files = response.json()
 
@@ -129,8 +128,7 @@ class Git:
         response = self.session.get(url)
 
         if response.status_code != 200:
-            raise APIException(f"Unexpected response. Host {self.git_provider.host}. Code {response.status_code}."
-                               f" Message {response.content}")
+            raise APIException(response=response)
 
         comments = response.json()
 
@@ -138,7 +136,7 @@ class Git:
             if self.comment_anchor in comment.get('body'):
                 return comment
 
-    def __insert_impact_report(self, body:str) -> dict:
+    def __insert_impact_report(self, body: str) -> dict:
         url = self.git_provider.build_list_comments_url(repository=self.repository,
                                                         pull_request_id=self.pull_request_id)
         body = f'{self.comment_anchor}\n{body}'
