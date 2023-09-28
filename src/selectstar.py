@@ -18,7 +18,7 @@ class SelectStar:
             'Authorization': f'Token {settings.get(AppSettings.SELECTSTAR_API_TOKEN)}',
             'User-Agent': 'Select Star Dbt Impact Report'
         })
-        self.host = settings.get(AppSettings.SELECTSTAR_API_URL)
+        self.api_url = settings.get(AppSettings.SELECTSTAR_API_URL)
         self.datasource_guid = settings.get(AppSettings.SELECTSTAR_DATASOURCE_GUID)
 
     def __get_tables_guids(self, dbt_models: list[DbtModel]):
@@ -28,7 +28,7 @@ class SelectStar:
         """
 
         page_size = 10
-        url = f'{self.host}/v1/tables/'
+        url = f'{self.api_url}/v1/tables/'
 
         for i in range(0, len(dbt_models), page_size):
             a_slice = dbt_models[i:i + page_size]
@@ -57,7 +57,7 @@ class SelectStar:
         :param guid: table's guid
         :return: the data returned by the API
         """
-        url = f'{self.host}/v1/tables/{guid}/'
+        url = f'{self.api_url}/v1/tables/{guid}/'
         params = {
             'query': f'{{guid,name,data_type,database{{guid,name,data_source{{guid,name,type}}}},schema{{guid,name}}}}'
         }
@@ -78,7 +78,7 @@ class SelectStar:
             if not model.guid:
                 continue
 
-            url = f'{self.host}/v1/dbt/warehouse-link/{model.guid}/'
+            url = f'{self.api_url}/v1/dbt/warehouse-link/{model.guid}/'
             response = self.session.get(url)
 
             if response.status_code != 200:
@@ -96,7 +96,7 @@ class SelectStar:
         Get the lineage for the given element
         :param element: a dbt model or a table linked (warehouse link)
         """
-        url = f'{self.host}/v1/lineage/{element.guid}/'
+        url = f'{self.api_url}/v1/lineage/{element.guid}/'
         params = {
             'dbt_links': True,
             'direction': 'right',
