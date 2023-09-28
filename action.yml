@@ -1,0 +1,34 @@
+name: "Select Star dbt impact report"
+description: "Creates a downstream impact report on your PR"
+author: "Select Star"
+
+inputs:
+  GIT_PROVIDER:
+    description: "Git Provider"
+    required: false
+    default: "github"
+  GIT_REPOSITORY:
+    description: "Repository of the source code"
+    required: true
+  GIT_REPOSITORY_TOKEN:
+    description: "Git access token"
+    required: true
+  PULL_REQUEST_ID:
+    description: "The repository's pull request to be analysed"
+    required: true
+  SELECTSTAR_API_URL:
+    description: "Select Star API instance URL"
+    required: true
+  SELECTSTAR_WEB_URL:
+    description: "Select Star Web instance URL"
+    required: true
+  SELECTSTAR_API_TOKEN:
+    description: "Select Star access token"
+    required: true
+  SELECTSTAR_DATASOURCE_GUID:
+    description: "The matching GUID of the Data Source linked to the informed repository"
+    required: true
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
