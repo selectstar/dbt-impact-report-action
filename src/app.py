@@ -4,7 +4,7 @@ import logging
 from settings import AppSettings, get_settings
 from git import GitProvider
 from selectstar import SelectStar
-from src.report_printer import ReportPrinter
+from report_printer import ReportPrinter
 
 FORMAT = '%(asctime)s %(levelname)s %(message)s'
 logging.basicConfig(format=FORMAT, level=logging.INFO)

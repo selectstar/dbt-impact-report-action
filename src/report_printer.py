@@ -1,6 +1,6 @@
 
 from settings import AppSettings
-from src.dataobjects import DbtModel
+from dataobjects import DbtModel
 
 
 class ReportPrinter:
