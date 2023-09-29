@@ -7,4 +7,4 @@ RUN chmod +x run.sh
 
 RUN pip install -r requirements.txt
 
-ENTRYPOINT ["/app/run.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]
