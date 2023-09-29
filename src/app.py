@@ -15,6 +15,11 @@ if __name__ == '__main__':
 
     log.info('Starting Dbt Impact Report by Select Star.')
 
+    import os
+
+    for name, value in os.environ.items():
+        log.info("{0}: {1}".format(name, value))
+
     settings = get_settings()
 
     git_provider = GitProvider(settings.get(AppSettings.GIT_PROVIDER))
