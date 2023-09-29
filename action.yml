@@ -33,4 +33,4 @@ runs:
   using: "docker"
   image: "Dockerfile"
   args:
-    - '--workdir /app'
+    - --workdir /app
