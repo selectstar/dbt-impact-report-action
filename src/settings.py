@@ -28,7 +28,7 @@ class AppSettings(Enum):
 
 
 def get_setting(setting: AppSettings):
-    a_setting = os.environ.get(setting.value)
+    a_setting = os.environ.get(setting.value) or os.environ.get(f'INPUT_{setting.value}')
     if setting.required and not a_setting:
         raise KeyError(f"Required env var not found: {setting.name}")
     return a_setting
