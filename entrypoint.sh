@@ -1,3 +1,3 @@
 #!/bin/sh
 
-python src/app.py
+python /app/src/app.py
