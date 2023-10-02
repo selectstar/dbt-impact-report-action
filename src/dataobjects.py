@@ -36,6 +36,7 @@ class DownstreamElement(ReportObject):
         self.guid = data.get("guid")
         self.name = data.get("name")
         self.type = data.get("data_type") or "-"
+        self.object_type = data.get("object_type")
         self.full_name = data.get("full_name")
         self.data_source_type = data.get("data_source_type")
         if data.get("popularity"):
@@ -45,6 +46,14 @@ class DownstreamElement(ReportObject):
 
     def __str__(self):
         return f'{self.guid=} {self.name=} {self.full_name=} {self.data_source_type=} {{{self.popularity}}}'
+
+    def get_link_to(self) -> str | None:
+        if self.object_type == 'table':
+            return f'/tables/{self.guid}/overview'
+        elif self.object_type == 'dashboard':
+            return f'/dashboards/{self.guid}/overview'
+        else:
+            return None
 
 
 class DataSource(ReportObject):
