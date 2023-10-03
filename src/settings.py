@@ -68,7 +68,6 @@ class SettingsManager:
             env_filepath = os.environ["GITHUB_EVENT_PATH"]
             with open(env_filepath) as env_file:
                 git_env = json.load(env_file)
-                log.info(git_env)
                 git_settings[AppSettings.GIT_REPOSITORY] = git_env["repository"]["full_name"]
                 git_settings[AppSettings.PULL_REQUEST_ID] = git_env["number"]
             return git_settings
