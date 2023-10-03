@@ -40,6 +40,7 @@
             - name: Run Action
               uses: selectstar/dbt-impact-report@v0.8
               with:
+                GIT_REPOSITORY_TOKEN: ${{secrets.GITHUB_TOKEN}}
                 SELECTSTAR_API_URL: ${{secrets.SELECTSTAR_API_URL}}
                 SELECTSTAR_WEB_URL: ${{secrets.SELECTSTAR_WEB_URL}}
                 SELECTSTAR_API_TOKEN: ${{secrets.SELECTSTAR_API_TOKEN}}
