@@ -21,6 +21,8 @@ if __name__ == '__main__':
 
     git_provider = GitProvider(settings.get(AppSettings.GIT_PROVIDER))
 
+    log.info(f"Is this a CI execution? {settings.get(AppSettings.GIT_CI)}")
+
     log.info('Getting the list of changed models using GIT API.')
 
     git = git_provider.get_git_integration(settings)
