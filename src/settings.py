@@ -64,7 +64,6 @@ class SettingsManager:
         log.info("Loading GitHub vars")
         git_settings = {}
         try:
-            git_settings[AppSettings.GIT_REPOSITORY_TOKEN] = os.environ["ACTIONS_RUNTIME_TOKEN"]
             env_filepath = os.environ["GITHUB_EVENT_PATH"]
             with open(env_filepath) as env_file:
                 git_env = json.load(env_file)
