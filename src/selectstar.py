@@ -1,9 +1,12 @@
 
+import logging
 import requests
 
 from dataobjects import DbtModel, DownstreamElement, TableLinked, WarehouseLink
 from exceptions import APIException
 from settings import AppSettings
+
+log = logging.getLogger(__name__)
 
 
 class SelectStar:
@@ -33,6 +36,7 @@ class SelectStar:
         for i in range(0, len(dbt_models), page_size):
             a_slice = dbt_models[i:i + page_size]
             slice_str = ",".join(dbt_model.filename for dbt_model in a_slice)
+            log.info(f"  Fetching GUID for the models: '{slice_str}' {self.datasource_guid=}")
             params = {
                 'query': '{guid,extra,table_type}',
                 'filename': slice_str,
@@ -78,6 +82,8 @@ class SelectStar:
             if not model.guid:
                 continue
 
+            log.info(f'  Fetching warehouse links for {model.guid=}{model.filename=}')
+
             url = f'{self.api_url}/v1/dbt/warehouse-link/{model.guid}/'
             response = self.session.get(url)
 
@@ -110,6 +116,8 @@ class SelectStar:
             'tableau_table_lineage': True,
         }
 
+        log.info(f'  Fetching lineage for {element.guid=}')
+
         response = self.session.get(url, params=params)
 
         if response.status_code != 200:
@@ -139,7 +147,10 @@ class SelectStar:
         :param dbt_models: list of the modified models
         :return: complete structure of models, tables and lineage
         """
+        log.info(" Fetching the dbt models GUID")
         self.__get_tables_guids(dbt_models=dbt_models)
+        log.info(" Fetching the dbt models warehouse links")
         self.__get_warehouse_links(dbt_models=dbt_models)
+        log.info(" Fetching the dbt models full lineage")
         self.__get_full_lineage(dbt_models=dbt_models)
         return dbt_models

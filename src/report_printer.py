@@ -87,7 +87,7 @@ class ReportPrinter:
                 linked_table = model.warehouse_links[0].table
 
                 for linked_table_element in linked_table.downstream_elements:
-                    obj_url = f'{self.select_star_web_url}/tables/{linked_table_element.guid}/overview'
+                    obj_url = f'{self.select_star_web_url}/link/{linked_table_element.guid}'
                     lines.append("|".join(
                         [
                             "",

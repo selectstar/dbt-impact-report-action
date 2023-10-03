@@ -1,7 +1,7 @@
 
 import logging
 
-from settings import AppSettings, get_settings
+from settings import AppSettings, SettingsManager
 from git import GitProvider
 from selectstar import SelectStar
 from report_printer import ReportPrinter
@@ -15,14 +15,13 @@ if __name__ == '__main__':
 
     log.info('Starting Dbt Impact Report by Select Star.')
 
-    import os
-
-    for name, value in os.environ.items():
-        log.info("{0}: {1}".format(name, value))
-
-    settings = get_settings()
+    settings_manager = SettingsManager()
+    settings = settings_manager.get_settings()
+    settings_manager.print()
 
     git_provider = GitProvider(settings.get(AppSettings.GIT_PROVIDER))
+
+    log.info(f"Is this a CI execution? {settings.get(AppSettings.GIT_CI)}")
 
     log.info('Getting the list of changed models using GIT API.')
 

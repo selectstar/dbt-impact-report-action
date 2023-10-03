@@ -1,8 +1,12 @@
 
+import json
+import logging
 import os
 
 from enum import Enum
 from dotenv import load_dotenv
+
+log = logging.getLogger(__name__)
 
 
 class AppSettings(Enum):
@@ -10,34 +14,79 @@ class AppSettings(Enum):
     def __new__(
         cls,
         value: str,
-        required: str = True,
+        printable: bool = False
     ):
         obj = object.__new__(cls)
         obj._value_ = value
-        obj.required = required
+        obj.printable = printable
         return obj
 
     SELECTSTAR_API_URL = ("SELECTSTAR_API_URL", True)
     SELECTSTAR_WEB_URL = ("SELECTSTAR_WEB_URL", True)
-    SELECTSTAR_API_TOKEN = ("SELECTSTAR_API_TOKEN", True)
+    SELECTSTAR_API_TOKEN = ("SELECTSTAR_API_TOKEN", False)
     SELECTSTAR_DATASOURCE_GUID = ("SELECTSTAR_DATASOURCE_GUID", True)
     GIT_PROVIDER = ("GIT_PROVIDER", True)
+    GIT_CI = ("GIT_CI", True)
     GIT_REPOSITORY = ("GIT_REPOSITORY", True)
-    GIT_REPOSITORY_TOKEN = ("GIT_REPOSITORY_TOKEN", True)
+    GIT_REPOSITORY_TOKEN = ("GIT_REPOSITORY_TOKEN", False)
     PULL_REQUEST_ID = ("PULL_REQUEST_ID", True)
 
 
-def get_setting(setting: AppSettings):
-    a_setting = os.environ.get(setting.value) or os.environ.get(f'INPUT_{setting.value}')
-    if setting.required and not a_setting:
-        raise KeyError(f"Required env var not found: {setting.name}")
-    return a_setting
+class SettingsManager:
 
+    def __init__(self):
+        self.settings: dict[AppSettings: str] = {}
 
-def get_settings():
+    def get_settings(self):
+        if not self.settings:
+            load_dotenv()
 
-    load_dotenv()
+            self.settings = {setting: self.__get_setting_from_environ(setting) for setting in AppSettings}
 
-    settings = {setting: get_setting(setting) for setting in AppSettings}
+            if self.settings.get(AppSettings.GIT_CI) in ["false", "False"]:
+                self.settings[AppSettings.GIT_CI] = False
 
-    return settings
+            if self.settings.get(AppSettings.GIT_CI):
+                if self.settings[AppSettings.GIT_PROVIDER] == 'github':
+                    self.settings = self.settings | self.__get_settings_from_github()
+                else:
+                    raise KeyError(f"Unknown git provider: {self.settings[AppSettings.GIT_PROVIDER]}")
+
+                self.__validate_settings()
+
+        return self.settings
+
+    @staticmethod
+    def __get_setting_from_environ(setting: AppSettings):
+        return os.environ.get(setting.value) or os.environ.get(f'INPUT_{setting.value}')
+
+    @staticmethod
+    def __get_settings_from_github() -> dict[AppSettings: str]:
+        git_settings = {}
+        try:
+            env_filepath = os.environ["GITHUB_EVENT_PATH"]
+            with open(env_filepath) as env_file:
+                git_env = json.load(env_file)
+                logging.info(f"FOUND GIT ENV: {git_env})")
+
+                #git_settings["GIT_REPOSITORY"] = git_env[""]
+                #git_settings["GIT_REPOSITORY_TOKEN"] = git_env[""]
+                #git_settings["PULL_REQUEST_ID"] = git_env[""]
+
+            return git_settings
+        except KeyError as kerr:
+            raise KeyError(kerr, 'Are you sure this is running inside GitHub workflow? Env var GIT_CI is set as True')
+
+    def __validate_settings(self):
+        for setting in AppSettings:
+            if not self.settings.get(setting):
+                raise KeyError(f"Required env var not found: {setting.name}")
+
+    def print(self):
+        if not self.settings:
+            log.error("You need to load the settings before trying to print them.")
+
+        log.info("These are the current values of the required settings")
+        for k, v in self.settings.items():
+            v_val = v if k.printable else '**HIDDEN**'
+            log.info(f"   {k.name} = '{v_val}'")

@@ -7,15 +7,10 @@ inputs:
     description: "Git Provider"
     required: false
     default: "github"
-  GIT_REPOSITORY:
-    description: "Repository of the source code"
-    required: true
-  GIT_REPOSITORY_TOKEN:
-    description: "Git access token"
-    required: true
-  PULL_REQUEST_ID:
-    description: "The repository's pull request to be analysed"
-    required: true
+  GIT_CI:
+    description: "Git Provider"
+    required: false
+    default: "True"
   SELECTSTAR_API_URL:
     description: "Select Star API instance URL"
     required: true
