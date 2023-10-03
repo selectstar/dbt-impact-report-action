@@ -74,10 +74,8 @@ class SettingsManager:
             raise Exception(exc, 'Are you sure this is running inside GitHub workflow? Env var GIT_CI is set as True')
 
     def __validate_settings(self):
-        self.print()
-
         for setting in AppSettings:
-            if not self.settings.get(setting):
+            if self.settings.get(setting) is None:
                 raise KeyError(f"Required env var not found: {setting.name}")
 
     def print(self):
