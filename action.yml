@@ -7,10 +7,6 @@ inputs:
     description: "Git Provider"
     required: false
     default: "github"
-  GIT_CI:
-    description: "Git Provider"
-    required: false
-    default: "True"
   SELECTSTAR_API_URL:
     description: "Select Star API instance URL"
     required: true
