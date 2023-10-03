@@ -43,8 +43,7 @@ class SettingsManager:
 
             self.settings = {setting: self.__get_setting_from_environ(setting) for setting in AppSettings}
 
-            if self.settings.get(AppSettings.GIT_CI) in ["false", "False"]:
-                self.settings[AppSettings.GIT_CI] = False
+            self.settings[AppSettings.GIT_CI] = self.settings.get(AppSettings.GIT_CI) not in ["false", "False"]
 
             if self.settings.get(AppSettings.GIT_CI):
                 if self.settings[AppSettings.GIT_PROVIDER] == 'github':
@@ -64,18 +63,15 @@ class SettingsManager:
     def __get_settings_from_github() -> dict[AppSettings: str]:
         git_settings = {}
         try:
+            git_settings["GIT_REPOSITORY_TOKEN"] = os.environ["ACTIONS_RUNTIME_TOKEN"]
             env_filepath = os.environ["GITHUB_EVENT_PATH"]
             with open(env_filepath) as env_file:
                 git_env = json.load(env_file)
-                logging.info(f"FOUND GIT ENV: {git_env})")
-
-                #git_settings["GIT_REPOSITORY"] = git_env[""]
-                #git_settings["GIT_REPOSITORY_TOKEN"] = git_env[""]
-                #git_settings["PULL_REQUEST_ID"] = git_env[""]
-
+                git_settings["GIT_REPOSITORY"] = git_env["repository"]["full_name"]
+                git_settings["PULL_REQUEST_ID"] = git_env["number"]
             return git_settings
-        except KeyError as kerr:
-            raise KeyError(kerr, 'Are you sure this is running inside GitHub workflow? Env var GIT_CI is set as True')
+        except Exception as exc:
+            raise Exception(exc, 'Are you sure this is running inside GitHub workflow? Env var GIT_CI is set as True')
 
     def __validate_settings(self):
         for setting in AppSettings:
