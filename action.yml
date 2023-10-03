@@ -9,13 +9,16 @@ inputs:
     default: "github"
   GIT_REPOSITORY:
     description: "Repository of the source code"
-    required: true
+    required: false
+    default: ${{github.repository}}
   GIT_REPOSITORY_TOKEN:
     description: "Git access token"
-    required: true
+    required: false
+    default: ${{github.repository}}
   PULL_REQUEST_ID:
     description: "The repository's pull request to be analysed"
-    required: true
+    required: false
+    default: ${{github.event.number}}
   SELECTSTAR_API_URL:
     description: "Select Star API instance URL"
     required: true

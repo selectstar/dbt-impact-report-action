@@ -19,27 +19,29 @@
 
 2. Add our GitHub Action to your workflow:
 
-    1. Create a workflow file in your repository `.github/workflows/select-star-impact-report.yml`:
-    2. Add the following code to the workflow file:
+   1. Create a workflow file in your repository `.github/workflows/select-star-impact-report.yml`
+ 
+   2. Add the following code to the workflow file:
 
-    on:
-      pull_request:
-        types: [opened, edited, synchronize, reopened]
-    
-      ```yaml
+         ```yaml
+      name: Select Star dbt impact report
+   
+      on:
+        pull_request:
+          types: [opened, edited, synchronize, reopened]
+   
       jobs:
         create-impact-report:
           name: Create the impact report for dbt projects
           runs-on: ubuntu-latest
+          permissions:
+            pull-requests: write 
           steps:
             - name: Run Action
-              uses: selectstar/dbt-impact-report@v0.2
+              uses: selectstar/dbt-impact-report@v0.8
               with:
-                GIT_REPOSITORY: ${{vars.GITHUB_REPOSITORY}}
-                GIT_REPOSITORY_TOKEN: ${{secrets.GITHUB_TOKEN}}
-                PULL_REQUEST_ID: ${{github.event.issue.number}}
                 SELECTSTAR_API_URL: ${{secrets.SELECTSTAR_API_URL}}
                 SELECTSTAR_WEB_URL: ${{secrets.SELECTSTAR_WEB_URL}}
                 SELECTSTAR_API_TOKEN: ${{secrets.SELECTSTAR_API_TOKEN}}
                 SELECTSTAR_DATASOURCE_GUID: ${{secrets.SELECTSTAR_DATASOURCE_GUID}}
-      ```
+         ```
