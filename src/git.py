@@ -26,7 +26,7 @@ class Git:
             'Authorization': f'Bearer {settings.get(AppSettings.GIT_REPOSITORY_TOKEN)}',
             'User-Agent': 'Select Star Dbt Impact Report'
         })
-        self.user: dict = self.__get_authenticated_user()
+        self.user: dict = self.__get_authenticated_user() if not self.settings.get(AppSettings.GIT_CI) else None
 
     def get_changed_files(self):
         """
@@ -67,8 +67,12 @@ class Git:
         comments = response.json()
 
         for comment in comments:
-            if comment['user']['login'] == self.user['login'] and self.comment_anchor in comment.get('body'):
-                return comment
+            if self.settings.get(AppSettings.GIT_CI):
+                if comment['user']['login'] == 'github-actions[bot]':
+                    return comment
+            else:
+                if comment['user']['login'] == self.user['login']:
+                    return comment
 
     def __insert_impact_report(self, body: str) -> dict:
         url = self._get_list_comments_url()
