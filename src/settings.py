@@ -64,15 +64,13 @@ class SettingsManager:
         log.info("Loading GitHub vars")
         git_settings = {}
         try:
-            git_settings["GIT_REPOSITORY_TOKEN"] = os.environ["ACTIONS_RUNTIME_TOKEN"]
+            git_settings[AppSettings.GIT_REPOSITORY_TOKEN] = os.environ["ACTIONS_RUNTIME_TOKEN"]
             env_filepath = os.environ["GITHUB_EVENT_PATH"]
             with open(env_filepath) as env_file:
                 git_env = json.load(env_file)
                 log.info(git_env)
-                git_settings["GIT_REPOSITORY"] = git_env["repository"]["full_name"]
-                log.info(f"gh repo [{git_settings['GIT_REPOSITORY']}]")
-                git_settings["PULL_REQUEST_ID"] = git_env["number"]
-                log.info(f"pr number [{git_settings['PULL_REQUEST_ID']}]")
+                git_settings[AppSettings.GIT_REPOSITORY] = git_env["repository"]["full_name"]
+                git_settings[AppSettings.PULL_REQUEST_ID] = git_env["number"]
             return git_settings
         except Exception as exc:
             raise Exception(exc, 'Are you sure this is running inside GitHub workflow? Env var GIT_CI is set as True')
