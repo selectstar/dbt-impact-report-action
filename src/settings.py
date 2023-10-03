@@ -51,7 +51,7 @@ class SettingsManager:
                 else:
                     raise KeyError(f"Unknown git provider: {self.settings[AppSettings.GIT_PROVIDER]}")
 
-                self.__validate_settings()
+            self.__validate_settings()
 
         return self.settings
 
@@ -61,19 +61,25 @@ class SettingsManager:
 
     @staticmethod
     def __get_settings_from_github() -> dict[AppSettings: str]:
+        log.info("Loading GitHub vars")
         git_settings = {}
         try:
             git_settings["GIT_REPOSITORY_TOKEN"] = os.environ["ACTIONS_RUNTIME_TOKEN"]
             env_filepath = os.environ["GITHUB_EVENT_PATH"]
             with open(env_filepath) as env_file:
                 git_env = json.load(env_file)
+                log.info(git_env)
                 git_settings["GIT_REPOSITORY"] = git_env["repository"]["full_name"]
+                log.info(f"gh repo [{git_settings['GIT_REPOSITORY']}]")
                 git_settings["PULL_REQUEST_ID"] = git_env["number"]
+                log.info(f"pr number [{git_settings['PULL_REQUEST_ID']}]")
             return git_settings
         except Exception as exc:
             raise Exception(exc, 'Are you sure this is running inside GitHub workflow? Env var GIT_CI is set as True')
 
     def __validate_settings(self):
+        self.print()
+
         for setting in AppSettings:
             if not self.settings.get(setting):
                 raise KeyError(f"Required env var not found: {setting.name}")
