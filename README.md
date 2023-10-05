@@ -12,10 +12,7 @@
 
 1. Create [repository secrets](https://github.com/Azure/actions-workflow-samples/blob/master/assets/create-secrets-for-GitHub-workflows.md#creating-secrets) in your repository:
 
-   - `SELECTSTAR_API_URL` with the URL of the Select Star API instance.
-   - `SELECTSTAR_WEB_URL` with the URL of the Select Star Website of the objects will be linked to.
    - `SELECTSTAR_API_TOKEN` with the value of the API access token.
-   - `SELECTSTAR_DATASOURCE_GUID` with the GUID of the datasource.
 
 2. Add our GitHub Action to your workflow:
 
@@ -38,11 +35,12 @@
             pull-requests: write 
           steps:
             - name: Run Action
-              uses: selectstar/dbt-impact-report@v0.8
+              uses: selectstar/dbt-impact-report@v1
               with:
                 GIT_REPOSITORY_TOKEN: ${{secrets.GITHUB_TOKEN}}
-                SELECTSTAR_API_URL: ${{secrets.SELECTSTAR_API_URL}}
-                SELECTSTAR_WEB_URL: ${{secrets.SELECTSTAR_WEB_URL}}
                 SELECTSTAR_API_TOKEN: ${{secrets.SELECTSTAR_API_TOKEN}}
-                SELECTSTAR_DATASOURCE_GUID: ${{secrets.SELECTSTAR_DATASOURCE_GUID}}
+                SELECTSTAR_API_URL: YOUR INSTANCE API URL   # (e.g.: https://api.production.selectstar.com/)
+                SELECTSTAR_WEB_URL: YOUR INSTANCE WEB URL   # (e.g.: https://www.selectstar.com/)
+                SELECTSTAR_DATASOURCE_GUID: YOUR DATA SOURCE GUID  # (e.g.: ds_aRjCTzAf4dPNigiV87Uggq)
          ```
+      
