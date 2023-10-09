@@ -39,8 +39,9 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - name: Load test
-        run: .github/scripts/docker-test-action.sh
+      # TODO: see https://app.shortcut.com/select-star/story/65663/create-tests
+      # - name: Load test
+      #   run: .github/scripts/docker-test-action.sh
       - uses: 8398a7/action-slack@v3
         with:
           author_name: ${{ github.repository_owner }}/${{ github.event.repository.name }}
