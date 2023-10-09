@@ -97,9 +97,7 @@ class ReportPrinter:
             if model.warehouse_links:
                 all_downstream_elements = all_downstream_elements + model.warehouse_links[0].table.downstream_elements
 
-            all_downstream_elements.sort(key=attrgetter('data_source_type'))
-            all_downstream_elements.sort(key=attrgetter('type'))
-            all_downstream_elements.sort(key=attrgetter('name'))
+            all_downstream_elements.sort(key=attrgetter('data_source_type', 'type', 'name'))
 
             for idx, model_element in enumerate(all_downstream_elements, start=1):
                 obj_url = f'{self.select_star_web_url}/tables/{model_element.guid}/overview'
