@@ -31,8 +31,8 @@ class ReportPrinter:
                 model_text_body = self._print_model_not_found(model)
                 elements.append((0, model_text_body))
 
-        header = f"# <img src='{self.select_star_web_url}/images/logoSmall.svg' width='25' height='25'> " \
-                 f"Select Star Impact Report\n" \
+        header = f"## <img src='{self.select_star_web_url}/images/logoSmall.svg' width='25' height='25' " \
+                 f"align='center'> Select Star Impact Report\n" \
                  f"Total Potential Impact: {self.__decide_potential_impact_img_emoji(total_impact_number)} " \
                  f"**{total_impact_number}** direct downstream objects" \
                  f" for the **{len(models)}** changed dbt models.<br/><br/><br/>"
@@ -78,7 +78,7 @@ class ReportPrinter:
         else:
             maps_to = f" has no linked warehouse table"
 
-        lines.append(f"<img src='{self.select_star_web_url}/icons/dbt.svg' width='15' height='15'> "
+        lines.append(f"<img src='{self.select_star_web_url}/icons/dbt.svg' width='15' height='15' align='center'> "
                      f"[{model.filepath.split('.')[0]}]({model_url}){maps_to}\n")
 
         total_impact_number = len(model.downstream_elements)
@@ -104,9 +104,28 @@ class ReportPrinter:
             for idx, model_element in enumerate(all_downstream_elements, start=1):
                 obj_url = f'{self.select_star_web_url}/tables/{model_element.guid}/overview'
                 lines.append(f"|{idx}"
-                             f"|<img src='{self.select_star_web_url}/icons/{model_element.data_source_type}.svg'"
-                             f" width='15' height='15'> {model_element.data_source_type}"
+                             f"|{self._build_datasource_img_tag(model_element.data_source_type)}"
+                             f" {model_element.data_source_type}"
                              f"|{model_element.type}"
                              f"|[{model_element.name}]({obj_url})|\n")
 
         return total_impact_number, "".join(lines)
+
+    def _build_datasource_img_tag(self, data_source_type: str):
+        if data_source_type in ['snowflake', 'mode', 'bigquery', 'tableau', 'dbt', 'periscope', 'sigma', 'metabase',
+                                'databricks', 'glue']:
+            icon = data_source_type
+        elif data_source_type == 'looker':
+            icon = 'iconLooker'
+        elif data_source_type == 'postgres':
+            icon = 'postgresql'
+        elif data_source_type in ['redshift', 'trial_redshift']:
+            icon = 'redshift-instance'
+        elif data_source_type == 'aws_s3':
+            icon = 'S3'
+        elif data_source_type == 'power_bi':
+            icon = 'powerbi'
+        else:
+            icon = 'database'
+
+        return f"<img src='{self.select_star_web_url}/icons/{icon}.svg' width='15' height='15' align='center'>"

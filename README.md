@@ -2,6 +2,7 @@
 
 ## Overview
 
+Whenever you change your model files, the Impact Report by Select Star will create a report containing the downstream impact of those changes.
 
 ## Before you start
 
@@ -10,9 +11,11 @@
 
 ## Configuration
 
-1. Create [repository secrets](https://github.com/Azure/actions-workflow-samples/blob/master/assets/create-secrets-for-GitHub-workflows.md#creating-secrets) in your repository:
+1. Create [repository secrets](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) in your repository:
 
    - `SELECTSTAR_API_TOKEN` with the value of the API access token.
+
+   Note: [Select Star API Token](https://docs.selectstar.com/select-star-api/authentication)
 
 2. Add our GitHub Action to your workflow:
 
@@ -43,4 +46,8 @@
                 SELECTSTAR_WEB_URL: YOUR INSTANCE WEB URL   # (e.g.: https://www.selectstar.com/)
                 SELECTSTAR_DATASOURCE_GUID: YOUR DATA SOURCE GUID  # (e.g.: ds_aRjCTzAf4dPNigiV87Uggq)
          ```
-      
+
+3. Test it out
+
+   After completing the steps above, create a new pull request with any changes to a dbt model file to test the action.
+You should see the action running and a new comment will be generated on your pull request.
