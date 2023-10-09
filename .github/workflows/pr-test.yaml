@@ -15,8 +15,7 @@ on:
   pull_request:
 
 jobs:
-  test:
-    name: Test
+  pr-test:
     runs-on: ubuntu-20.04
     steps:
       - name: Set up Docker Buildx
@@ -29,24 +28,14 @@ jobs:
         run: ./.github/scripts/precommit-install.sh
       - name: Lint Python
         run: ./.github/scripts/precommit-lint.sh
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: test-image
-          tags: |
-            type=schedule
-            type=sha,format=long,prefix=
-            type=ref,event=branch
-            type=ref,event=tag
-            type=ref,event=pr
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         id: build
         with:
           context: .
+          load: true
           file: Dockerfile
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: test-image
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

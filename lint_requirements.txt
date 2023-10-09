@@ -1,1 +1,2 @@
 pre-commit~=2.17.0
+flake8==4.0.1

@@ -1,0 +1,23 @@
+name: PR assign creator
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  pr-assign:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.assignee.login != github.event.pull_request.user.login }}
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addAssignees({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              assignees: [context.payload.pull_request.user.login] 
+            });
