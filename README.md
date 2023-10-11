@@ -46,7 +46,8 @@ Whenever you change your model files, the Impact Report by Select Star will crea
                 SELECTSTAR_DATASOURCE_GUID: YOUR DATA SOURCE GUID  # (e.g.: ds_aRjCTzAf4dPNigiV87Uggq)
          ```
 
-3. Test it Out
-After configuring the GitHub action, test out the dbt Impact Report by creating a pull request with any change to a dbt
+3. Test it Out:
+
+   After configuring the GitHub action, test out the dbt Impact Report by creating a pull request with any change to a dbt
 model file in the repo. You should see the action running and a new comment generated on the pull request with
 the Impact report.
