@@ -61,7 +61,7 @@ class ReportPrinter:
 
     def _print_model(self, model: DbtModel) -> (int, str):
         """
-        Creates the report of a single model
+        Creates the report of a single model.
         :param model: a dbt model
         :return: the text of a single dbt model
         """
