@@ -6,16 +6,15 @@ Whenever you change your model files, the Impact Report by Select Star will crea
 
 ## Before you start
 
-- **Select Star API Token**: Access token to use the APIs
-- **Select Star Datasource GUID**: The GUID of the datasource this repository is connected to
+1. **Select Star API Token** - this is required for the Action to use Select Star's APIs. See [API Token](https://docs.selectstar.com/select-star-api/authentication).
+2. **Select Star Data Source GUID** - this is the GUID of the dbt data source corresponding to the repository you're adding the Action to.
+   1. You can get the GUID by going into **Admin > Data** and selecting the dbt data source. The GUID will be in the URL and look like `ds_exAmpLE`.
 
-## Configuration
+## Configure the GitHub Action
 
-1. Create [repository secrets](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) in your repository:
+1. If you don't already have it, create [repository secrets](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) in your repo:
 
-   - `SELECTSTAR_API_TOKEN` with the value of the API access token.
-
-   Note: [Select Star API Token](https://docs.selectstar.com/select-star-api/authentication)
+   1. `SELECTSTAR_API_TOKEN` with the value of the API Token from the prerequisites.
 
 2. Add our GitHub Action to your workflow:
 
@@ -47,7 +46,7 @@ Whenever you change your model files, the Impact Report by Select Star will crea
                 SELECTSTAR_DATASOURCE_GUID: YOUR DATA SOURCE GUID  # (e.g.: ds_aRjCTzAf4dPNigiV87Uggq)
          ```
 
-3. Test it out
-
-   After completing the steps above, create a new pull request with any changes to a dbt model file to test the action.
-You should see the action running and a new comment will be generated on your pull request.
+3. Test it Out
+After configuring the GitHub action, test out the dbt Impact Report by creating a pull request with any change to a dbt
+model file in the repo. You should see the action running and a new comment generated on the pull request with
+the Impact report.
