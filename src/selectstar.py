@@ -1,5 +1,5 @@
-
 import logging
+
 import requests
 
 from dataobjects import DbtModel, DownstreamElement, TableLinked, WarehouseLink
@@ -17,10 +17,12 @@ class SelectStar:
     def __init__(self, settings: dict):
         self.settings = settings
         self.session = requests.Session()
-        self.session.headers.update({
-            'Authorization': f'Token {settings.get(AppSettings.SELECTSTAR_API_TOKEN)}',
-            'User-Agent': 'Select Star Dbt Impact Report'
-        })
+        self.session.headers.update(
+            {
+                "Authorization": f"Token {settings.get(AppSettings.SELECTSTAR_API_TOKEN)}",
+                "User-Agent": "Select Star Dbt Impact Report",
+            }
+        )
         self.api_url = settings.get(AppSettings.SELECTSTAR_API_URL)
         self.datasource_guid = settings.get(AppSettings.SELECTSTAR_DATASOURCE_GUID)
 
@@ -31,16 +33,18 @@ class SelectStar:
         """
 
         page_size = 10
-        url = f'{self.api_url}/v1/tables/'
+        url = f"{self.api_url}/v1/tables/"
 
         for i in range(0, len(dbt_models), page_size):
-            a_slice = dbt_models[i:i + page_size]
+            a_slice = dbt_models[i : i + page_size]
             slice_str = ",".join(dbt_model.filename for dbt_model in a_slice)
-            log.info(f"  Fetching GUID for the models: '{slice_str}' {self.datasource_guid=}")
+            log.info(
+                f"  Fetching GUID for the models: '{slice_str}' {self.datasource_guid=}"
+            )
             params = {
-                'query': '{guid,extra,table_type}',
-                'filename': slice_str,
-                'datasources': self.datasource_guid,
+                "query": "{guid,extra,table_type}",
+                "filename": slice_str,
+                "datasources": self.datasource_guid,
             }
             response = self.session.get(url, params=params)
 
@@ -51,8 +55,8 @@ class SelectStar:
 
             for dbt_model in a_slice:
                 for table in tables:
-                    if dbt_model.filename in table['extra']['path']:
-                        dbt_model.guid = table['guid']
+                    if dbt_model.filename in table["extra"]["path"]:
+                        dbt_model.guid = table["guid"]
                         continue
 
     def __get_table(self, guid: str) -> dict:
@@ -61,9 +65,9 @@ class SelectStar:
         :param guid: table's guid
         :return: the data returned by the API
         """
-        url = f'{self.api_url}/v1/tables/{guid}/'
+        url = f"{self.api_url}/v1/tables/{guid}/"
         params = {
-            'query': f'{{guid,name,data_type,database{{guid,name,data_source{{guid,name,type}}}},schema{{guid,name}}}}'
+            "query": f"{{guid,name,data_type,database{{guid,name,data_source{{guid,name,type}}}},schema{{guid,name}}}}"
         }
         response = self.session.get(url, params=params)
 
@@ -82,9 +86,9 @@ class SelectStar:
             if not model.guid:
                 continue
 
-            log.info(f'  Fetching warehouse links for {model.guid=}{model.filename=}')
+            log.info(f"  Fetching warehouse links for {model.guid=}{model.filename=}")
 
-            url = f'{self.api_url}/v1/dbt/warehouse-link/{model.guid}/'
+            url = f"{self.api_url}/v1/dbt/warehouse-link/{model.guid}/"
             response = self.session.get(url)
 
             if response.status_code != 200:
@@ -102,21 +106,21 @@ class SelectStar:
         Get the lineage for the given element
         :param element: a dbt model or a table linked (warehouse link)
         """
-        url = f'{self.api_url}/v1/lineage/{element.guid}/'
+        url = f"{self.api_url}/v1/lineage/{element.guid}/"
         params = {
-            'dbt_links': True,
-            'direction': 'right',
-            'group_by_data_source': True,
-            'include_borderline_edges': True,
-            'looker_db_lineage': True,
-            'looker_view_lineage': True,
-            'max_depth': 1,
-            'mode': 'table',
-            'mode_lineage': False,
-            'tableau_table_lineage': True,
+            "dbt_links": True,
+            "direction": "right",
+            "group_by_data_source": True,
+            "include_borderline_edges": True,
+            "looker_db_lineage": True,
+            "looker_view_lineage": True,
+            "max_depth": 1,
+            "mode": "table",
+            "mode_lineage": False,
+            "tableau_table_lineage": True,
         }
 
-        log.info(f'  Fetching lineage for {element.guid=}')
+        log.info(f"  Fetching lineage for {element.guid=}")
 
         response = self.session.get(url, params=params)
 

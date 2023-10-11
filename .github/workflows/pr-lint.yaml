@@ -1,0 +1,49 @@
+name: PR Lint
+
+on:
+  pull_request:
+    # By default, a workflow only runs when a pull_request's activity type is opened, synchronize, or reopened. We
+    # explicity override here so that PR titles are re-linted when the PR text content is edited.
+    #
+    # Possible values: https://help.github.com/en/actions/reference/events-that-trigger-workflows#pull-request-event-pull_request
+    types: [opened, edited, reopened, synchronize]
+  # We're just trigger it on 'merge_group' to satisfy branch protection rules
+  # We skip all steps for that scenario
+  merge_group:
+
+jobs:
+  pr-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Noop
+        run: "true"
+      - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} )"
+        if: github.event_name != 'merge_group'
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - uses: morrisoncole/pr-lint-action@v1.7.0
+        if: github.event_name != 'merge_group'
+        with:
+          title-regex: '\[sc-[0-9]+\]$'
+          on-failed-regex-fail-action: true
+          on-failed-regex-request-changes: false
+          on-failed-regex-create-review: false
+          on-failed-regex-comment:
+            "Please format your PR title to match: `%regex%`!"
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+      - run: npm install node-fetch
+        if: github.event_name != 'merge_group'
+      - uses: actions/github-script@v6
+        if: github.event_name != 'merge_group'
+        env:
+          SHORTCUT_API_TOKEN: '${{ secrets.SHORTCUT_API_TOKEN }}'
+        with:
+          script: |
+            const script = require('./.github/scripts/sync-label.js')
+            const allowedLabels = ["Production", ]
+            await script({ github, context, core, allowedLabels })
