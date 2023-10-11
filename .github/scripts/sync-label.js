@@ -26,7 +26,7 @@ const fetchStoryLabel = async (story_id) => {
 }
 
 module.exports = async ({ github, context, core, allowedLabels = [] }) => {
-    const story_match = context.payload.pull_request.head.ref.match('sc-([0-9]*)')
+    const story_match = context.payload.pull_request.head.ref.match('sc-([0-9]+)')
     if (!story_match) {
         core.warning("Unable to find story ID")
         return;
