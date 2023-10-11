@@ -1,4 +1,3 @@
-
 from json import JSONEncoder
 
 
@@ -8,7 +7,6 @@ class ReportObjectEncoder(JSONEncoder):
 
 
 class ReportObject:
-
     def __init__(self, data: dict):
         self._raw_data = data
         self._extract_attributes(data=self._raw_data)
@@ -23,7 +21,6 @@ class ReportObject:
 
 
 class Popularity(ReportObject):
-
     def _extract_attributes(self, data: dict):
         self.popularity = data.get("popularity")
         self.count = data.get("query_count") or data.get("view_count") or 0
@@ -31,7 +28,6 @@ class Popularity(ReportObject):
 
 
 class DownstreamElement(ReportObject):
-
     def _extract_attributes(self, data: dict):
         self.guid = data.get("guid")
         self.name = data.get("name")
@@ -44,11 +40,10 @@ class DownstreamElement(ReportObject):
             self.popularity = None
 
     def __str__(self):
-        return f'{self.guid=} {self.name=} {self.full_name=} {self.data_source_type=} {{{self.popularity}}}'
+        return f"{self.guid=} {self.name=} {self.full_name=} {self.data_source_type=} {{{self.popularity}}}"
 
 
 class DataSource(ReportObject):
-
     def _extract_attributes(self, data: dict):
         self.guid = data.get("guid")
         self.name = data.get("name")
@@ -56,7 +51,6 @@ class DataSource(ReportObject):
 
 
 class DataBase(ReportObject):
-
     def _extract_attributes(self, data: dict):
         self.guid = data.get("guid")
         self.name = data.get("name")
@@ -64,14 +58,12 @@ class DataBase(ReportObject):
 
 
 class Schema(ReportObject):
-
     def _extract_attributes(self, data: dict):
         self.guid = data.get("guid")
         self.name = data.get("name")
 
 
 class TableLinked(ReportObject):
-
     def _extract_attributes(self, data: dict):
         self.guid = data.get("guid")
         self.name = data.get("name")
@@ -81,7 +73,6 @@ class TableLinked(ReportObject):
 
 
 class WarehouseLink(ReportObject):
-
     def __init__(self, data: dict):
         super().__init__(data)
         self.table = None
@@ -94,7 +85,6 @@ class WarehouseLink(ReportObject):
 
 
 class DbtModel(ReportObject):
-
     def _extract_attributes(self, data: dict):
         self.filepath = data.get("filename")
         self.filename = self.filepath.split("/")[-1]
@@ -102,4 +92,3 @@ class DbtModel(ReportObject):
         self.guid = None
         self.warehouse_links = []
         self.downstream_elements = []
-
