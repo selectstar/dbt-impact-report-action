@@ -1,4 +1,4 @@
-# Select Star dbt Impact Report
+# Select Star dbt Impact Report Action
 
 ## Overview
 
