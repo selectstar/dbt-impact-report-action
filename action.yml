@@ -1,4 +1,4 @@
-name: "Select Star dbt Impact Report Action"
+name: "Select Star dbt Impact Report"
 description: "Creates a downstream impact report on your PR"
 author: "Select Star"
 
