@@ -26,3 +26,7 @@ inputs:
 runs:
   using: "docker"
   image: "Dockerfile"
+
+branding:
+  icon: bar-chart-2
+  color: purple
