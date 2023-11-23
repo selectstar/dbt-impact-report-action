@@ -22,7 +22,7 @@ Whenever you change your model files, the Impact Report by Select Star will crea
  
    2. Add the following code to the workflow file:
 
-         ```yaml
+      ```yaml
       name: Select Star dbt impact report
    
       on:
@@ -44,7 +44,7 @@ Whenever you change your model files, the Impact Report by Select Star will crea
                 SELECTSTAR_API_URL: YOUR INSTANCE API URL   # (e.g.: https://api.production.selectstar.com/)
                 SELECTSTAR_WEB_URL: YOUR INSTANCE WEB URL   # (e.g.: https://www.selectstar.com/)
                 SELECTSTAR_DATASOURCE_GUID: YOUR DATA SOURCE GUID  # (e.g.: ds_aRjCTzAf4dPNigiV87Uggq)
-         ```
+      ```
 
 3. Test it Out:
 
