@@ -56,7 +56,7 @@ class ReportPrinter:
         lines = [
             f"<img src='{self.select_star_web_url}/icons/dbt.svg' width='15' height='15' align='center'> "
             f"{model.filepath.split('.')[0]}\n",
-            f"Model not found in Select Star database.",
+            f"Model not found in Select Star database. This model may be hidden or not ingested.",
         ]
 
         return "".join(lines)
