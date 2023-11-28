@@ -39,6 +39,9 @@ class SettingsManager:
                 for setting in AppSettings
             }
 
+            self.settings[AppSettings.SELECTSTAR_API_URL] = self.settings[AppSettings.SELECTSTAR_API_URL].rstrip("/")
+            self.settings[AppSettings.SELECTSTAR_WEB_URL] = self.settings[AppSettings.SELECTSTAR_WEB_URL].rstrip("/")
+
             self.settings[AppSettings.GIT_CI] = self.settings.get(
                 AppSettings.GIT_CI
             ) not in ["false", "False"]
