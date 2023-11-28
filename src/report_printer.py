@@ -51,12 +51,12 @@ class ReportPrinter:
     def __decide_potential_impact_img_emoji(impact_number):
         return ":warning:" if impact_number > 0 else ":white_check_mark:"
 
-    @staticmethod
-    def _print_model_not_found(model: DbtModel) -> str:
+    def _print_model_not_found(self, model: DbtModel) -> str:
 
         lines = [
-            f"### - {model.filepath}\n",
-            f"Model not found in Select Star database.",
+            f"<img src='{self.select_star_web_url}/icons/dbt.svg' width='15' height='15' align='center'> "
+            f"{model.filepath.split('.')[0]}\n",
+            f"Model not found in Select Star database. This model may be hidden or not ingested.",
         ]
 
         return "".join(lines)
