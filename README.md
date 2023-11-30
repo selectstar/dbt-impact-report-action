@@ -41,8 +41,8 @@ Whenever you change your model files, the Impact Report by Select Star will crea
               with:
                 GIT_REPOSITORY_TOKEN: ${{secrets.GITHUB_TOKEN}}   # no need to change, GitHub will handle it as it is
                 SELECTSTAR_API_TOKEN: ${{secrets.SELECTSTAR_API_TOKEN}}
-                SELECTSTAR_API_URL: YOUR INSTANCE API URL   # (e.g.: https://api.production.selectstar.com/)
-                SELECTSTAR_WEB_URL: YOUR INSTANCE WEB URL   # (e.g.: https://www.selectstar.com/)
+                SELECTSTAR_API_URL: YOUR INSTANCE API URL   # (e.g.: https://api.production.selectstar.com)
+                SELECTSTAR_WEB_URL: YOUR INSTANCE WEB URL   # (e.g.: https://app.selectstar.com)
                 SELECTSTAR_DATASOURCE_GUID: YOUR DATA SOURCE GUID  # (e.g.: ds_aRjCTzAf4dPNigiV87Uggq)
       ```
 
