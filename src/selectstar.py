@@ -43,7 +43,7 @@ class SelectStar:
             )
             params = {
                 "query": "{guid,extra,table_type}",
-                "filename": slice_str,
+                "filenames": slice_str,
                 "datasources": self.datasource_guid,
             }
             response = self.session.get(url, params=params)
