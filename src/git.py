@@ -53,7 +53,7 @@ class Git:
 
         for file in files:
             result = re.match(
-                r"models/(\w)+/(\w+)+.sql", file.get("filename"), flags=re.IGNORECASE
+                r"models/(.+/)?\w+.sql", file.get("filename"), flags=re.IGNORECASE
             )
             if result:
                 found_models.append(DbtModel(file))
