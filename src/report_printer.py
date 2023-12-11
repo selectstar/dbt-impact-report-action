@@ -3,6 +3,9 @@ from operator import attrgetter
 from dataobjects import DbtModel
 from settings import AppSettings
 
+HTML_FOR_WARNING_SIGN = "&#x26a0;&#xfe0f;"
+HTML_FOR_WHITE_CHECK_MARK = "&#x2705;"
+
 
 class ReportPrinter:
     def __init__(self, settings: dict):
@@ -49,7 +52,7 @@ class ReportPrinter:
 
     @staticmethod
     def __decide_potential_impact_img_emoji(impact_number):
-        return ":warning:" if impact_number > 0 else ":white_check_mark:"
+        return HTML_FOR_WARNING_SIGN if impact_number > 0 else HTML_FOR_WHITE_CHECK_MARK
 
     def _print_model_not_found(self, model: DbtModel) -> str:
 
@@ -97,11 +100,11 @@ class ReportPrinter:
 
         if total_impact_number > 0:
             lines.append(
-                f"Potential Impact: :warning: {total_impact_number} direct downstream objects.\n"
+                f"Potential Impact: {HTML_FOR_WARNING_SIGN} {total_impact_number} direct downstream objects.\n"
             )
         else:
             lines.append(
-                f"Potential Impact: :white_check_mark: No direct downstream objects.\n"
+                f"Potential Impact: {HTML_FOR_WHITE_CHECK_MARK} No direct downstream objects.\n"
             )
 
         if total_impact_number:
