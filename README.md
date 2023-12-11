@@ -37,7 +37,7 @@ Whenever you change your model files, the Impact Report by Select Star will crea
             pull-requests: write 
           steps:
             - name: Run Action
-              uses: selectstar/dbt-impact-report@v1
+              uses: selectstar/dbt-impact-report-action@v1
               with:
                 GIT_REPOSITORY_TOKEN: ${{secrets.GITHUB_TOKEN}}   # no need to change, GitHub will handle it as it is
                 SELECTSTAR_API_TOKEN: ${{secrets.SELECTSTAR_API_TOKEN}}
