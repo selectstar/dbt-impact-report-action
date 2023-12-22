@@ -96,7 +96,7 @@ class SelectStar:
 
             found_links = response.json()
 
-            for link in found_links:
+            for link in found_links.get("results"):
                 warehouse_link = WarehouseLink(link)
                 warehouse_link.set_table(self.__get_table(warehouse_link.guid))
                 model.warehouse_links.append(warehouse_link)
