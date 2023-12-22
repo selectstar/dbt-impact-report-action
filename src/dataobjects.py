@@ -78,7 +78,7 @@ class WarehouseLink(ReportObject):
         self.table = None
 
     def _extract_attributes(self, data: dict):
-        self.guid = data.get("warehouse_table").get("guid")
+        self.guid = data["warehouse_table"]["guid"]
 
     def set_table(self, data: dict):
         self.table = TableLinked(data=data)
