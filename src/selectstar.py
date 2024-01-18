@@ -105,8 +105,10 @@ class SelectStar:
                     warehouse_link.set_table(found_table)
                     model.warehouse_links.append(warehouse_link)
                 else:
-                    log.warning(f"   A warehouse link was found, but the target DWH table was not found."
-                                f" Was it removed/deactivated? Missing table guid = {warehouse_link.guid}")
+                    log.warning(
+                        f"   A warehouse link was found, but the target DWH table was not found."
+                        f" Was it removed/deactivated? Missing table guid = {warehouse_link.guid}"
+                    )
 
     def __get_element_lineage(self, element: DbtModel | TableLinked):
         """

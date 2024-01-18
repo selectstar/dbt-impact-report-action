@@ -55,7 +55,6 @@ class ReportPrinter:
         return HTML_FOR_WARNING_SIGN if impact_number > 0 else HTML_FOR_WHITE_CHECK_MARK
 
     def _print_model_not_found(self, model: DbtModel) -> str:
-
         lines = [
             f"<img src='{self.select_star_web_url}/icons/dbt.svg' width='15' height='15' align='center'> "
             f"{model.filepath.split('.')[0]}\n",
