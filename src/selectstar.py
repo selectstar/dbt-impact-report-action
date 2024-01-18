@@ -71,7 +71,9 @@ class SelectStar:
         }
         response = self.session.get(url, params=params)
 
-        if response.status_code != 200:
+        if response.status_code == 404:
+            return None
+        elif response.status_code != 200:
             raise APIException(response=response)
 
         return response.json()
@@ -86,7 +88,7 @@ class SelectStar:
             if not model.guid:
                 continue
 
-            log.info(f"  Fetching warehouse links for {model.guid=}{model.filename=}")
+            log.info(f"  Fetching warehouse links for {model.guid=} {model.filename=}")
 
             url = f"{self.api_url}/v1/dbt/warehouse-link/{model.guid}/"
             response = self.session.get(url)
@@ -98,8 +100,13 @@ class SelectStar:
 
             for link in found_links["results"]:
                 warehouse_link = WarehouseLink(link)
-                warehouse_link.set_table(self.__get_table(warehouse_link.guid))
-                model.warehouse_links.append(warehouse_link)
+                found_table = self.__get_table(warehouse_link.guid)
+                if found_table:
+                    warehouse_link.set_table(found_table)
+                    model.warehouse_links.append(warehouse_link)
+                else:
+                    log.warning(f"   A warehouse link was found, but the target DWH table was not found."
+                                f" Was it removed/deactivated? Missing table guid = {warehouse_link.guid}")
 
     def __get_element_lineage(self, element: DbtModel | TableLinked):
         """
