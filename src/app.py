@@ -11,7 +11,6 @@ log = logging.getLogger(__name__)
 
 
 if __name__ == "__main__":
-
     log.info("Starting Dbt Impact Report by Select Star.")
 
     settings_manager = SettingsManager()

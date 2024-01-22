@@ -12,7 +12,6 @@ log = logging.getLogger(__name__)
 
 
 class Git:
-
     comment_anchor = "<!-- ImpactReportIdentifier: select-star-dbt-impact-report -->"
 
     def __init__(self, settings: dict):
