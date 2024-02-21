@@ -26,7 +26,7 @@ jobs:
         with:
           persist-credentials: false
           submodules: recursive
-      - uses: morrisoncole/pr-lint-action@v1.7.0
+      - uses: morrisoncole/pr-lint-action@v1.7.1
         if: github.event_name != 'merge_group'
         with:
           title-regex: '\[sc-[0-9]+\]$'
