@@ -57,7 +57,7 @@ class Git:
             if result:
                 found_models.append(DbtModel(data=file, project_relative_filepath=result.string))
 
-        log.info(f"Found models: {[(f.filename, f.status) for f in found_models]}")
+        log.info(f"Found models: {[(f.project_relative_filepath, f.status) for f in found_models]}")
 
         return found_models
 
