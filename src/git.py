@@ -55,7 +55,7 @@ class Git:
                 r"models/(.+/)?\w+.sql", file.get("filename"), flags=re.IGNORECASE
             )
             if result:
-                found_models.append(DbtModel(file))
+                found_models.append(DbtModel(data=file, project_relative_filepath=result.string))
 
         log.info(f"Found models: {[(f.filename, f.status) for f in found_models]}")
 
