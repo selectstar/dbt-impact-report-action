@@ -37,7 +37,7 @@ class SelectStar:
 
         for i in range(0, len(dbt_models), page_size):
             a_slice = dbt_models[i : i + page_size]
-            slice_str = ",".join(dbt_model.filename for dbt_model in a_slice)
+            slice_str = ",".join(dbt_model.filepath for dbt_model in a_slice)
             log.info(
                 f"  Fetching GUID for the models: '{slice_str}' {self.datasource_guid=}"
             )
