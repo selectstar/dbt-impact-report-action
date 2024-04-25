@@ -85,6 +85,10 @@ class WarehouseLink(ReportObject):
 
 
 class DbtModel(ReportObject):
+    def __init__(self, data: dict, project_relative_filepath: str):
+        super().__init__(data)
+        self.project_relative_filepath = project_relative_filepath
+
     def _extract_attributes(self, data: dict):
         self.filepath = data.get("filename")
         self.filename = self.filepath.split("/")[-1]
