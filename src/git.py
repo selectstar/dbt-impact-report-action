@@ -51,12 +51,12 @@ class Git:
         found_models = []
 
         for file in files:
-            result = re.match(
+            result = re.search(
                 r"models/(.+/)?\w+.sql", file.get("filename"), flags=re.IGNORECASE
             )
             if result:
                 found_models.append(
-                    DbtModel(data=file, project_relative_filepath=result.string)
+                    DbtModel(data=file, project_relative_filepath=result.group(0))
                 )
 
         log.info(
