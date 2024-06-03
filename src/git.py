@@ -48,22 +48,32 @@ class Git:
         if len(files) == 100:
             log.warning("Processing only the first 100 files on this pull request.")
 
-        found_models = []
+        found_models: dict[str, DbtModel] = {}
+
+        log.info(
+            f"Files in this PR: {[(f.get('filename'), f.get('status')) for f in files]}"
+        )
 
         for file in files:
             result = re.search(
                 r"models/(.+/)?\w+.sql", file.get("filename"), flags=re.IGNORECASE
             )
             if result:
-                found_models.append(
-                    DbtModel(data=file, project_relative_filepath=result.group(0))
-                )
+                project_relative_filepath = result.group(0)
+                if project_relative_filepath in found_models:
+                    log.warning(
+                        f"Model {project_relative_filepath} already found. Skipping."
+                    )
+                else:
+                    found_models[project_relative_filepath] = DbtModel(data=file, project_relative_filepath=result.group(0))
+
+        unique_found_models: list[DbtModel] = list(found_models.values())
 
         log.info(
-            f"Found models: {[(f.project_relative_filepath, f.status) for f in found_models]}"
+            f"Found models: {[(f.project_relative_filepath, f.status) for f in unique_found_models]}"
         )
 
-        return found_models
+        return unique_found_models
 
     def __get_impact_report_comment_id(self) -> dict | None:
         url = self._get_list_comments_url()
