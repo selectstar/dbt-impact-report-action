@@ -65,7 +65,9 @@ class Git:
                         f"Model {project_relative_filepath} already found. Skipping."
                     )
                 else:
-                    found_models[project_relative_filepath] = DbtModel(data=file, project_relative_filepath=result.group(0))
+                    found_models[project_relative_filepath] = DbtModel(
+                        data=file, project_relative_filepath=result.group(0)
+                    )
 
         log.info(
             f"Found models: {[(f.project_relative_filepath, f.status) for f in list(found_models.values())]}"
