@@ -67,13 +67,11 @@ class Git:
                 else:
                     found_models[project_relative_filepath] = DbtModel(data=file, project_relative_filepath=result.group(0))
 
-        unique_found_models: list[DbtModel] = list(found_models.values())
-
         log.info(
-            f"Found models: {[(f.project_relative_filepath, f.status) for f in unique_found_models]}"
+            f"Found models: {[(f.project_relative_filepath, f.status) for f in list(found_models.values())]}"
         )
 
-        return unique_found_models
+        return list(found_models.values())
 
     def __get_impact_report_comment_id(self) -> dict | None:
         url = self._get_list_comments_url()
