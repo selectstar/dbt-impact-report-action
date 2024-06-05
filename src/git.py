@@ -56,7 +56,7 @@ class Git:
 
         for file in files:
             result = re.search(
-                r"models/(.+/)?\w+.sql", file.get("filename"), flags=re.IGNORECASE
+                r"models/(.+/)?\w+\.sql$", file.get("filename"), flags=re.IGNORECASE
             )
             if result:
                 project_relative_filepath = result.group(0)
