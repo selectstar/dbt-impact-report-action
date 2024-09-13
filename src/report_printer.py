@@ -35,7 +35,7 @@ class ReportPrinter:
                 elements.append((0, model_text_body))
 
         header = (
-            f"## <img src='{self.select_star_web_url}/images/logoSmall.svg' width='25' height='25' "
+            f"## <img src='{self.select_star_web_url}/icons/logo-ss-sign.svg' width='25' height='25' "
             f"align='center'> Select Star Impact Report\n"
             f"Total Potential Impact: {self.__decide_potential_impact_img_emoji(total_impact_number)} "
             f"**{total_impact_number}** direct downstream objects"
