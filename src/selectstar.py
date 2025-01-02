@@ -156,6 +156,44 @@ class SelectStar:
             for link in model.warehouse_links:
                 self.__get_element_lineage(link.table)
 
+    def __deduplicate_downstream(self, dbt_models: list[DbtModel]):
+        """
+        Checks both the dbt model downstream list and their warehouse link downstream list for duplicates between them,
+         creating a single, unique, downstream.
+        :param dbt_models: list of dbt models
+        """
+        for model in dbt_models:
+            # we merge the downstream elements from the dbt model and its warehouse link
+            all_downstream_elements = model.downstream_elements
+            if model.warehouse_links:
+                all_downstream_elements = (
+                        all_downstream_elements
+                        + model.warehouse_links[0].table.downstream_elements
+                )
+
+            # then we create a unique list of downstream elements
+            unique_downstream_elements = {}
+
+            # first we pick the dbt elements, they have priority over their links
+            for downstream_element in all_downstream_elements:
+                if downstream_element.guid not in unique_downstream_elements and downstream_element.data_source_type == "dbt":
+                    unique_downstream_elements[downstream_element.guid] = downstream_element
+
+            # second we pick the other data source type elements and check if the linked object
+            # is already in the list previously populated by dbt elements
+            for downstream_element in all_downstream_elements:
+                if downstream_element.guid not in unique_downstream_elements and downstream_element.data_source_type != "dbt":
+                    is_unique = True
+                    for linked_obj in downstream_element.linked_objects:
+                        if linked_obj in unique_downstream_elements:
+                            unique_downstream_elements[linked_obj].linked_object_data_source_type = downstream_element.data_source_type
+                            is_unique = False
+                            break
+                    if is_unique:
+                        unique_downstream_elements[downstream_element.guid] = downstream_element
+
+            model.all_unique_downstream_elements = list(unique_downstream_elements.values())
+
     def get_lineage(self, dbt_models: list[DbtModel]):
         """
         Fetch all the required data for the impact report
@@ -168,4 +206,6 @@ class SelectStar:
         self.__get_warehouse_links(dbt_models=dbt_models)
         log.info(" Fetching the dbt models full lineage")
         self.__get_full_lineage(dbt_models=dbt_models)
+        log.info(" Merge the linked objects")
+        self.__deduplicate_downstream(dbt_models=dbt_models)
         return dbt_models

@@ -34,6 +34,8 @@ class DownstreamElement(ReportObject):
         self.type = data.get("data_type") or "-"
         self.full_name = data.get("full_name")
         self.data_source_type = data.get("data_source_type")
+        self.linked_objects = data.get("linked_objs") or []
+        self.linked_object_data_source_type = None
         if data.get("popularity"):
             self.popularity = Popularity(data.get("popularity"))
         else:
@@ -96,3 +98,5 @@ class DbtModel(ReportObject):
         self.guid = None
         self.warehouse_links = []
         self.downstream_elements = []
+        # my downstream elements + warehouse linked table downstream elements
+        self.all_unique_downstream_elements = []
