@@ -206,6 +206,6 @@ class SelectStar:
         self.__get_warehouse_links(dbt_models=dbt_models)
         log.info(" Fetching the dbt models full lineage")
         self.__get_full_lineage(dbt_models=dbt_models)
-        log.info(" Merge the linked objects")
+        log.info(" Deduplicate the downstream elements")
         self.__deduplicate_downstream(dbt_models=dbt_models)
         return dbt_models
