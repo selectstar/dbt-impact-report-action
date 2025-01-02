@@ -167,8 +167,8 @@ class SelectStar:
             all_downstream_elements = model.downstream_elements
             if model.warehouse_links:
                 all_downstream_elements = (
-                        all_downstream_elements
-                        + model.warehouse_links[0].table.downstream_elements
+                    all_downstream_elements
+                    + model.warehouse_links[0].table.downstream_elements
                 )
 
             # then we create a unique list of downstream elements
@@ -176,23 +176,39 @@ class SelectStar:
 
             # first we pick the dbt elements, they have priority over their links
             for downstream_element in all_downstream_elements:
-                if downstream_element.guid not in unique_downstream_elements and downstream_element.data_source_type == "dbt":
-                    unique_downstream_elements[downstream_element.guid] = downstream_element
+                if (
+                    downstream_element.guid not in unique_downstream_elements
+                    and downstream_element.data_source_type == "dbt"
+                ):
+                    unique_downstream_elements[
+                        downstream_element.guid
+                    ] = downstream_element
 
             # second we pick the other data source type elements and check if the linked object
             # is already in the list previously populated by dbt elements
             for downstream_element in all_downstream_elements:
-                if downstream_element.guid not in unique_downstream_elements and downstream_element.data_source_type != "dbt":
+                if (
+                    downstream_element.guid not in unique_downstream_elements
+                    and downstream_element.data_source_type != "dbt"
+                ):
                     is_unique = True
                     for linked_obj in downstream_element.linked_objects:
                         if linked_obj in unique_downstream_elements:
-                            unique_downstream_elements[linked_obj].linked_object_data_source_type = downstream_element.data_source_type
+                            unique_downstream_elements[
+                                linked_obj
+                            ].linked_object_data_source_type = (
+                                downstream_element.data_source_type
+                            )
                             is_unique = False
                             break
                     if is_unique:
-                        unique_downstream_elements[downstream_element.guid] = downstream_element
+                        unique_downstream_elements[
+                            downstream_element.guid
+                        ] = downstream_element
 
-            model.all_unique_downstream_elements = list(unique_downstream_elements.values())
+            model.all_unique_downstream_elements = list(
+                unique_downstream_elements.values()
+            )
 
     def get_lineage(self, dbt_models: list[DbtModel]):
         """
