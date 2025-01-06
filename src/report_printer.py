@@ -119,7 +119,7 @@ class ReportPrinter:
                 )
                 if model_element.linked_object_data_source_type:
                     source_types = (
-                        f"{self._build_datasource_img_tag(model_element.data_source_type)} {model_element.data_source_type}<br/>"
+                        f"{self._build_datasource_img_tag(model_element.data_source_type)} {model_element.data_source_type} / "
                         f"{self._build_datasource_img_tag(model_element.linked_object_data_source_type)} {model_element.linked_object_data_source_type}"
                     )
                 else:
