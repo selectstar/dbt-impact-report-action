@@ -58,7 +58,7 @@ class ReportPrinter:
         lines = [
             f"<img src='{self.select_star_web_url}/icons/dbt.svg' width='15' height='15' align='center'> "
             f"{model.filepath.split('.')[0]}\n",
-            f"Model not found in Select Star database. This model may be hidden or not ingested.",
+            "Model not found in Select Star database. This model may be hidden or not ingested.",
         ]
 
         return "".join(lines)
@@ -84,18 +84,14 @@ class ReportPrinter:
                 f"{linked_table.schema.name}/{linked_table.name}]({linked_table_link})"
             )
         else:
-            maps_to = f" has no linked warehouse table"
+            maps_to = " has no linked warehouse table"
 
         lines.append(
             f"<img src='{self.select_star_web_url}/icons/dbt.svg' width='15' height='15' align='center'> "
             f"[{model.filepath.split('.')[0]}]({model_url}){maps_to}\n"
         )
 
-        total_impact_number = len(model.downstream_elements)
-        if model.warehouse_links:
-            total_impact_number = total_impact_number + len(
-                model.warehouse_links[0].table.downstream_elements
-            )
+        total_impact_number = len(model.all_unique_downstream_elements)
 
         if total_impact_number > 0:
             lines.append(
@@ -111,12 +107,7 @@ class ReportPrinter:
                 "| # | Data Source Type | Object Type | Name |\n|--------|--------|--------|--------|\n"
             )
 
-            all_downstream_elements = model.downstream_elements
-            if model.warehouse_links:
-                all_downstream_elements = (
-                    all_downstream_elements
-                    + model.warehouse_links[0].table.downstream_elements
-                )
+            all_downstream_elements = model.all_unique_downstream_elements
 
             all_downstream_elements.sort(
                 key=attrgetter("data_source_type", "type", "name")
@@ -126,10 +117,17 @@ class ReportPrinter:
                 obj_url = (
                     f"{self.select_star_web_url}/tables/{model_element.guid}/overview"
                 )
+                if model_element.linked_object_data_source_type:
+                    source_types = (
+                        f"{self._build_datasource_img_tag(model_element.data_source_type)} {model_element.data_source_type} / "
+                        f"{self._build_datasource_img_tag(model_element.linked_object_data_source_type)} {model_element.linked_object_data_source_type}"
+                    )
+                else:
+                    source_types = f"{self._build_datasource_img_tag(model_element.data_source_type)} {model_element.data_source_type}"
+
                 lines.append(
                     f"|{idx}"
-                    f"|{self._build_datasource_img_tag(model_element.data_source_type)}"
-                    f" {model_element.data_source_type}"
+                    f"|{source_types}"
                     f"|{model_element.type}"
                     f"|[{model_element.name}]({obj_url})|\n"
                 )
