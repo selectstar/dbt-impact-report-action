@@ -1,7 +1,7 @@
 name: Test
 
 permissions:
-  contents: read  # required for actions/checkout@v5
+  contents: read  # required for actions/checkout@v6
   actions: read
 
 on:
@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           # Disabling shallow clone is recommended for improving relevancy of reporting by SonarQube
           fetch-depth: 0
